@@ -4,76 +4,96 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 
 
-
-
-
 form = """
-<!doctype html>
+<!DOCTYPE html>
+<html>
 
-<h1><strong> User-Signup<strong></h1>
+<style>
+    .error {{ color: purple; }}
+</style>
+
+<h1><strong> Signup <strong></h1>
 <html>
     <body>
-        <form action ="/welcome">
-        <label for = "username">Username</label>
-            <input type = "text" name= "username"/>
-            <input type = "submit"/>
+        <form action = "/validate" method= "post">
+        <label class= "label" for = "username">Username</label>
+            <input type = "text" name= "username" value ='{username}'/> 
         </label>
-        </form>
-    </body>
-</html>
+    <p class= 'error'>{username_error}</p>
+<br>
     
 
-
-""" 
-
-password = """
-<style>
-    .error{{color: purple;}}
-</style>
-
-<form method = 'POST'>
     <label> Password 
-        <input name= "Password" type = "text"/>
-</label>
-<input type= "submit" value= "Submit"/>
-</form> 
-"""
+        <input name= "password" type = "password" value ='{password}'/>
+    </label>
+    <p class = "error">{password_error}</p>
 
-verify_password = """
- <style>
-    .error{{color: purple;}}
-</style>
+<br>
 
-<form method = 'POST'>
     <label> Verify Password 
-        <input name= "Verify Passord" type = "text"/>
-</label>
-<input type= "submit" value= "Submit"/>
-</form> 
-"""
+        <input name= "verify_password" type = "password" value ='{password}'/>
+    </label>
+    <p class = "error">{verify_password_error}</p>
+<br>
 
-email_address = """
-<style>
-    .error{{color: purple;}}
-</style>
-
-<form method = 'POST'>
     <label> Email Address (Optional) 
-        <input name= "Email Address" type = "text"/>
-</label>
+        <input name= "email_address" type = "text" value ='{email_address}'/>
+    </label>
+    <p class = "error"> {email_address_error}</p>
+
+<br>
+
 <input type= "submit" value= "Submit"/>
+</body>
 </form> 
+
+</html>
 """
 
+@app.route("/validate")
+def display_form():
+    return form.format(username='' ,username_error= '', password= '', password_error= '', verify_password= '', verify_password_error= '', email_address = '', email_address_error= '')
 
-@app.route("/")
-def index():
+def input_length(input):
+    if len(input) > 3 and len(input) < 20:
+        return True
+    else:
+        return False
 
-    content = form + password + verify_password + email_address
-    return content
+def check_for_space(input):
+    if i in range(len(input)) == '':
+        return False
+    else:
+        return True
 
-@app.route("/welcome")
-def welcome():
-    username = request.args.get("username")
-    return '<h1>Welcome ' + str(username) +'!</h1>'
+@app.route("/validate", methods=['POST'])
+def validate_form():
+
+    username = request.form['username']
+    password = request.form['password']
+    verify_password = request.form['verify_password']
+    email_address = request.form['email_address']
+
+    username_error = ''
+    password_error = ''
+    verify_password_error = ''
+    email_address_errror = ''
+
+    if not input_length(username):
+        username_error = 'Not a valid username'
+
+    if not input_length(password):
+        password_error = 'Not a valid password'
+
+    if not input_length(verify_password):
+        validate_password_error = 'not valid password'
+    if not username_error and not password_error and not validate_password_error:
+        return SUCCESS
+    else:
+            return form.format(username_error=username_error, password_error = password_error, validate_password_error= validate_password_error)
+
+
+
+
+
 app.run()
