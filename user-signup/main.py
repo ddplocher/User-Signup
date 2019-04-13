@@ -15,7 +15,7 @@ form = """
 <h1><strong> Signup <strong></h1>
 <html>
     <body>
-        <form action = "/validate" method= "post">
+        <form action = "/">
         <label class= "label" for = "username">Username</label>
             <input type = "text" name= "username" value ='{username}'/> 
         </label>
@@ -50,7 +50,7 @@ form = """
 </html>
 """
 
-@app.route("/validate")
+@app.route("/", methods=['POST'])
 def display_form():
     return form.format(username='' ,username_error= '', password= '', password_error= '', verify_password= '', verify_password_error= '', email_address = '', email_address_error= '')
 
@@ -66,7 +66,7 @@ def check_for_space(input):
     else:
         return True
 
-@app.route("/validate", methods=['POST'])
+@app.route("/", methods=['POST'])
 def validate_form():
 
     username = request.form['username']
