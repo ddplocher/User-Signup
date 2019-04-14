@@ -1,58 +1,21 @@
 from flask import Flask, request, redirect
+import cgi
+import os
+import jinja2
+
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
+
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
 
-form = """
-<!DOCTYPE html>
-<html>
-
-<style>
-    .error {{ color: purple; }}
-</style>
-
-<h1><strong> Signup <strong></h1>
-<html>
-    <body>
-        <form method= 'POST'>
-        <label class= "label" for = "username">Username</label>
-            <input type = "text" name= "username" value ='{username}'/> 
-        </label>
-    <p class= 'error'>{username_error}</p>
-
-    
-
-    <label> Password 
-        <input name= "password" type = "password" value ='{password}'/>
-    </label>
-    <p class = "error">{password_error}</p>
-
-
-
-    <label> Verify Password 
-        <input name= "verify_password" type = "password" value ='{verify_password}'/>
-    </label>
-    <p class = "error">{verify_password_error}</p>
-
-
-    <label> Email Address (Optional) 
-        <input name= "email_address" type = "text" value ='{email_address}'/><p class = "error"> {email_address_error}</p>
-    
-    </label>
-
-
-
-<input type= "submit" value= "Submit"/>
-</body>
-</form> 
-
-</html>
-"""
-
-@app.route("/validate_form")
+@app.route("/")
 def display_form():
-    return form.format(username='' ,username_error= '', password='', password_error='', verify_password='', verify_password_error='',email_address='', email_address_error='')
+    template = jinja_env.get_template('form.html')
+    return template.render()
 
 def input_length(input):
     if len(str(input)) > 2 and len(str(input)) < 19:
@@ -61,7 +24,6 @@ def input_length(input):
         return False
 
 
-#not working, fix
 def check_for_space(name): 
     new_name = name.replace(" ", "MM")
     if len(new_name) == len(name):
@@ -85,7 +47,7 @@ def check_email(email_address):
         return False
            
 
-@app.route("/validate_form", methods=['POST'])
+@app.route("/", methods=['POST'])
 def validate_form():
 
     username = request.form['username']
@@ -114,33 +76,36 @@ def validate_form():
     
     if not input_length(password):
         password_error = 'Not valid password length (3-20 charectors)'
+        password = ''
     else:
         if not check_for_space(password):
             password_error = 'Not valid password (spaces)'
+            password= ''
 
     if not input_length(verify_password):
         verify_password_error = 'Not valid password length (3-20 charectors)'
+        verify_password =''
     
     if not password_check(password, verify_password):
         password_error = 'password and verify password did not match'
         verify_password_error = 'password and verify password did not match'
+        password = ''
+        verify_password = ''
 
     if not username_error and not password_error and not verify_password_error:
         
-        return redirect('/valid_login')
+        return redirect('/valid_login?username={0}'.format(username))
     else:
-        return form.format(email_address_error= email_address_error, email_address= email_address, password= password, password_error= password_error, verify_password= verify_password, verify_password_error= verify_password_error, username_error= username_error, username=username)
+        template = jinja_env.get_template('form.html')
+        return template.render(email_address_error= email_address_error, email_address= email_address, password= password, password_error= password_error, verify_password= verify_password, verify_password_error= verify_password_error, username_error= username_error, username=username)
     
 
 
-@app.route('/valid_login')
+@app.route("/valid_login")
 def valid_login():
-    
-    return '<h1> Welcome</h1>'
+    name = request.args.get('username')
+    template = jinja_env.get_template('welcome.html')
+    return template.render(name=name)
 
-
-               
-    
-    
 
 app.run()
