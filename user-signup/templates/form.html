@@ -1,0 +1,46 @@
+<!DOCTYPEhtml>
+<html>
+<header></header>
+<style>
+    .error { color: purple; }
+    .label {color: hotpink; }
+    .title { color: teal;}
+</style>
+</header>
+<h1 class ='title'><strong> Signup <strong></h1>
+
+    <body>
+        <form method= 'POST'>
+       <label class= 'label' for = "username">Username</label>
+           
+           <input type = "text" name= "username" value ='{{username}}'/> 
+        </label>
+    <span class= 'error'>{{username_error}}</span>
+    
+<br>
+    
+    <label class= 'label'> Password 
+        <input name= "password" type = "password" value ='{{password}}'/>
+    </label>
+    <span class = "error">{{password_error}}</span>
+
+<br>
+
+    <label class = 'label'> Verify Password 
+        <input name= "verify_password" type = "password" value ='{{verify_password}}'/>
+    </label>
+    <span class = "error">{{verify_password_error}}</span>
+
+<br>
+    <label class = 'label'> Email Address (Optional) 
+        <input name= "email_address" type = "text" value ='{{email_address}}'/> 
+    </label>
+    <span class = "error"> {{email_address_error}}</span>
+
+<br>
+
+<input type= "submit" value= "Submit"/>
+</body>
+</form> 
+
+</html>
